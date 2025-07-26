@@ -1,0 +1,87 @@
+[gd_scene load_steps=14 format=3 uid="uid://cjhtjxem8kawe"]
+
+[ext_resource type="PackedScene" uid="uid://cxvr53i6mkcnd" path="res://player.tscn" id="1_u52ul"]
+[ext_resource type="Script" uid="uid://l0ks3e1ntbcj" path="res://level.gd" id="1_vonw3"]
+[ext_resource type="Texture2D" uid="uid://ctl6dla35eiyi" path="res://sprites/idle_1.png" id="3_f2txt"]
+[ext_resource type="Texture2D" uid="uid://bgyxmdm70idan" path="res://sprites/punch_3.png" id="4_1ainy"]
+[ext_resource type="Texture2D" uid="uid://x0axxye6qma6" path="res://sprites/kick_1.png" id="5_n6hdu"]
+[ext_resource type="Texture2D" uid="uid://dp4t3cw16y8lu" path="res://sprites/idlep2.png" id="6_km5ld"]
+[ext_resource type="Texture2D" uid="uid://blxf5snhdr510" path="res://sprites/punchp2.png" id="7_i2t4f"]
+[ext_resource type="Texture2D" uid="uid://k5imuvy778c3" path="res://sprites/kickp2.png" id="8_8cye3"]
+[ext_resource type="Texture2D" uid="uid://btv6cxa5fl4lm" path="res://sprites/background.png" id="9_i2t4f"]
+[ext_resource type="PackedScene" uid="uid://dwrp2hqxrvdei" path="res://heart_ui.tscn" id="10_8cye3"]
+[ext_resource type="AudioStream" uid="uid://b8qht34nuby1v" path="res://sprites/2021-08-30_-_Boss_Time_-_www.FesliyanStudios.com.mp3" id="11_2orkt"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5xgho"]
+size = Vector2(300, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_f2txt"]
+size = Vector2(20, 200)
+
+[node name="level" type="Node2D"]
+script = ExtResource("1_vonw3")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(122, 182)
+shape = SubResource("RectangleShape2D_5xgho")
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="StaticBody2D"]
+
+[node name="Player1" parent="." instance=ExtResource("1_u52ul")]
+position = Vector2(24, 147)
+idle_texture = ExtResource("3_f2txt")
+punch_texture = ExtResource("4_1ainy")
+kick_texture = ExtResource("5_n6hdu")
+
+[node name="Player2" parent="." instance=ExtResource("1_u52ul")]
+position = Vector2(212, 146)
+player_id = 2
+idle_texture = ExtResource("6_km5ld")
+punch_texture = ExtResource("7_i2t4f")
+kick_texture = ExtResource("8_8cye3")
+
+[node name="CollisionShape2D" parent="Player2" index="0"]
+visible = false
+
+[node name="Sprite2D" parent="Player2" index="1"]
+position = Vector2(-11, -1)
+
+[node name="StaticBody2D2" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D2"]
+position = Vector2(-11, 92)
+shape = SubResource("RectangleShape2D_f2txt")
+
+[node name="StaticBody2D3" type="StaticBody2D" parent="."]
+position = Vector2(278, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D3"]
+position = Vector2(-11, 92)
+shape = SubResource("RectangleShape2D_f2txt")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = -5
+position = Vector2(128, 96)
+texture = ExtResource("9_i2t4f")
+
+[node name="HeartUI_P1" type="CanvasLayer" parent="."]
+
+[node name="HeartUI" parent="HeartUI_P1" instance=ExtResource("10_8cye3")]
+offset_right = 104.0
+offset_bottom = 32.0
+
+[node name="HeartUI_P2" type="CanvasLayer" parent="."]
+
+[node name="HeartUI" parent="HeartUI_P2" instance=ExtResource("10_8cye3")]
+offset_left = 153.0
+offset_top = -1.0
+offset_right = 257.0
+offset_bottom = 31.0
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("11_2orkt")
+autoplay = true
+
+[editable path="Player2"]

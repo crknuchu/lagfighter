@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://cxvr53i6mkcnd"]
+
+[ext_resource type="Texture2D" uid="uid://ctl6dla35eiyi" path="res://sprites/idle_1.png" id="1_pqb02"]
+[ext_resource type="Script" uid="uid://b43lt2hqb2i7b" path="res://player.gd" id="1_ytgb6"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_3pafw"]
+radius = 5.0
+height = 45.0
+
+[node name="Node2D" type="CharacterBody2D"]
+script = ExtResource("1_ytgb6")
+p1_win_scene = "uid://7gwe5g41t37h"
+p2_win_scene = "uid://dw2plykua065x"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_3pafw")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(11, 0)
+texture = ExtResource("1_pqb02")

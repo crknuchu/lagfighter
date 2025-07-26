@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://7gwe5g41t37h"]
+
+[ext_resource type="Texture2D" uid="uid://bfv7idb3ov1gg" path="res://sprites/p1wins.png" id="1_6htv1"]
+[ext_resource type="Script" uid="uid://cu8fgd8qot7p0" path="res://button.gd" id="2_dhs16"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(129, 96)
+texture = ExtResource("1_6htv1")
+
+[node name="Button" type="Button" parent="."]
+offset_left = 92.0
+offset_top = 136.0
+offset_right = 167.0
+offset_bottom = 167.0
+text = "RESTART"
+script = ExtResource("2_dhs16")
+
+[connection signal="pressed" from="Button" to="Button" method="_on_pressed"]
