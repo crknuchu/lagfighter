@@ -1,7 +1,7 @@
 extends HBoxContainer
 
 @export var max_hearts: int = 3
-var current_hearts: int = 3
+@export var current_hearts: int = 5
 
 func _ready() -> void:
 	update_hearts()

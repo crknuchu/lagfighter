@@ -5,15 +5,29 @@
 
 [node name="HeartUI" type="HBoxContainer"]
 script = ExtResource("1_fq772")
+max_hearts = 5
 
 [node name="TextureRect" type="TextureRect" parent="."]
 layout_mode = 2
 texture = ExtResource("2_ys402")
+expand_mode = 3
+
+[node name="TextureRect4" type="TextureRect" parent="."]
+layout_mode = 2
+texture = ExtResource("2_ys402")
+expand_mode = 3
+
+[node name="TextureRect5" type="TextureRect" parent="."]
+layout_mode = 2
+texture = ExtResource("2_ys402")
+expand_mode = 3
 
 [node name="TextureRect2" type="TextureRect" parent="."]
 layout_mode = 2
 texture = ExtResource("2_ys402")
+expand_mode = 3
 
 [node name="TextureRect3" type="TextureRect" parent="."]
 layout_mode = 2
 texture = ExtResource("2_ys402")
+expand_mode = 3
