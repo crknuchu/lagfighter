@@ -20,6 +20,7 @@ const KICK_DAMAGE = 2
 @export var idle_texture: Texture2D
 @export var punch_texture: Texture2D
 @export var kick_texture: Texture2D
+@export var run_texture: Texture2D # For running
 
 var last_punch_time: int = -1000
 var last_kick_time: int = -2000
@@ -30,7 +31,10 @@ var health_ui: Node = null
 
 var opponent: Fighter
 
-#var velocity: Vector2 = Vector2.ZERO
+# Animation swap logic
+var _run_anim_time := 0.0
+var _run_anim_state := false # false=idle_texture, true=run_texture
+var _force_anim_override := false
 
 func _ready() -> void:
 	health = max_health
@@ -42,10 +46,14 @@ func _physics_process(delta: float) -> void:
 
 func handle_movement(delta: float) -> void:
 	var input_vector = Vector2.ZERO
+	var is_moving = false
+
 	if Input.is_action_pressed("move_left_p%d" % player_id):
 		input_vector.x -= 1
+		is_moving = true
 	elif Input.is_action_pressed("move_right_p%d" % player_id):
 		input_vector.x += 1
+		is_moving = true
 
 	# Horizontal movement
 	velocity.x = input_vector.x * speed
@@ -60,8 +68,20 @@ func handle_movement(delta: float) -> void:
 	if Input.is_action_just_pressed("jump_p%d" % player_id) and is_on_floor():
 		velocity.y = jump_velocity
 
-	#velocity = move_and_slide(velocity, Vector2.UP)
 	move_and_slide()
+
+	# Animation swap logic for running
+	if not _force_anim_override and is_on_floor():
+		if is_moving and run_texture and idle_texture:
+			_run_anim_time += delta
+			if _run_anim_time >= 0.2:
+				_run_anim_time = 0.0
+				_run_anim_state = !_run_anim_state
+			$Sprite2D.texture = run_texture if _run_anim_state else idle_texture
+		elif idle_texture:
+			_run_anim_time = 0.0
+			_run_anim_state = false
+			$Sprite2D.texture = idle_texture
 
 func _unhandled_input(event: InputEvent) -> void:
 	var now := Time.get_ticks_msec()
@@ -88,6 +108,7 @@ func handle_delayed_actions() -> void:
 		input_queue.erase(item)
 
 func perform_action(action: String) -> void:
+	_force_anim_override = true
 	match action:
 		"punch":
 			if punch_texture:
@@ -101,6 +122,7 @@ func perform_action(action: String) -> void:
 			print("Player %d kicks!" % player_id)
 
 	if !is_inside_tree():
+		_force_anim_override = false
 		return
 
 	var delay = 0.2
@@ -109,10 +131,12 @@ func perform_action(action: String) -> void:
 		await timer.timeout
 
 	if !is_inside_tree():
+		_force_anim_override = false
 		return
 
 	if is_inside_tree() and is_instance_valid($Sprite2D) and idle_texture:
 		$Sprite2D.texture = idle_texture
+	_force_anim_override = false
 
 func check_hit(range: float, damage: int) -> void:
 	if opponent and abs(position.x - opponent.position.x) < range:
