@@ -75,18 +75,16 @@ texture = ExtResource("9_i2t4f")
 [node name="HeartUI_P1" type="CanvasLayer" parent="."]
 
 [node name="HeartUI" parent="HeartUI_P1" instance=ExtResource("10_8cye3")]
-offset_left = 11.0
-offset_top = 5.0
-offset_right = 102.0
-offset_bottom = 20.0
+offset_left = 5.0
+offset_right = 96.0
+offset_bottom = 15.0
 
 [node name="HeartUI_P2" type="CanvasLayer" parent="."]
 
 [node name="HeartUI" parent="HeartUI_P2" instance=ExtResource("10_8cye3")]
 offset_left = 161.0
-offset_top = 7.0
-offset_right = 247.0
-offset_bottom = 21.0
+offset_right = 253.0
+offset_bottom = 15.0
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("11_2orkt")
