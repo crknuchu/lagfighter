@@ -1,7 +1,7 @@
 [gd_scene load_steps=16 format=3 uid="uid://cjhtjxem8kawe"]
 
-[ext_resource type="PackedScene" uid="uid://cxvr53i6mkcnd" path="res://player.tscn" id="1_u52ul"]
-[ext_resource type="Script" uid="uid://l0ks3e1ntbcj" path="res://level.gd" id="1_vonw3"]
+[ext_resource type="PackedScene" uid="uid://cxvr53i6mkcnd" path="res://player/player.tscn" id="1_u52ul"]
+[ext_resource type="Script" uid="uid://l0ks3e1ntbcj" path="res://level/level.gd" id="1_vonw3"]
 [ext_resource type="Texture2D" uid="uid://ctl6dla35eiyi" path="res://sprites/idle_1.png" id="3_f2txt"]
 [ext_resource type="Texture2D" uid="uid://bgyxmdm70idan" path="res://sprites/punch_3.png" id="4_1ainy"]
 [ext_resource type="Texture2D" uid="uid://x0axxye6qma6" path="res://sprites/kick_1.png" id="5_n6hdu"]
@@ -11,7 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://k5imuvy778c3" path="res://sprites/kickp2.png" id="8_8cye3"]
 [ext_resource type="Texture2D" uid="uid://btv6cxa5fl4lm" path="res://sprites/background.png" id="9_i2t4f"]
 [ext_resource type="Texture2D" uid="uid://bhljsliacaj5y" path="res://sprites/walkp2.png" id="10_8b0r0"]
-[ext_resource type="PackedScene" uid="uid://dwrp2hqxrvdei" path="res://heart_ui.tscn" id="10_8cye3"]
+[ext_resource type="PackedScene" uid="uid://dwrp2hqxrvdei" path="res://menus/heart_ui.tscn" id="10_8cye3"]
 [ext_resource type="AudioStream" uid="uid://b8qht34nuby1v" path="res://sprites/2021-08-30_-_Boss_Time_-_www.FesliyanStudios.com.mp3" id="11_2orkt"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5xgho"]

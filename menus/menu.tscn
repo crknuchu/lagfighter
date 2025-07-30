@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://c4efhpxb8aeea"]
 
 [ext_resource type="Texture2D" uid="uid://mf3kvmsrkawi" path="res://sprites/lf.png" id="1_lti8b"]
-[ext_resource type="Script" uid="uid://chrf0r4xwl53v" path="res://button2.gd" id="2_ouk20"]
+[ext_resource type="Script" uid="uid://chrf0r4xwl53v" path="res://menus/button2.gd" id="2_ouk20"]
 
 [node name="Node2D" type="Node2D"]
 
