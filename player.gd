@@ -22,6 +22,10 @@ const KICK_DAMAGE = 2
 @export var kick_texture: Texture2D
 @export var run_texture: Texture2D # For running
 
+# Knockback parameters
+@export var knockback_force: float = 300.0
+@export var knockback_upward_force: float = -200.0
+
 var last_punch_time: int = -1000
 var last_kick_time: int = -2000
 
@@ -36,42 +40,31 @@ var _run_anim_time := 0.0
 var _run_anim_state := false # false=idle_texture, true=run_texture
 var _force_anim_override := false
 
+var _knockback_timer := 0.0
+var _is_knockback := false
+
 func _ready() -> void:
 	health = max_health
 	$Sprite2D.texture = idle_texture
 
 func _physics_process(delta: float) -> void:
-	handle_movement(delta)
+	if _is_knockback:
+		_knockback_timer -= delta
+		if _knockback_timer <= 0:
+			_is_knockback = false
+	else:
+		handle_movement(delta)
 	handle_delayed_actions()
 
-func handle_movement(delta: float) -> void:
-	var input_vector = Vector2.ZERO
-	var is_moving = false
-
-	if Input.is_action_pressed("move_left_p%d" % player_id):
-		input_vector.x -= 1
-		is_moving = true
-	elif Input.is_action_pressed("move_right_p%d" % player_id):
-		input_vector.x += 1
-		is_moving = true
-
-	# Horizontal movement
-	velocity.x = input_vector.x * speed
-
-	# Gravity
+	# Apply gravity always, even during knockback
 	if not is_on_floor():
 		velocity.y += gravity * delta
 	else:
 		velocity.y = 0
 
-	# Jumping
-	if Input.is_action_just_pressed("jump_p%d" % player_id) and is_on_floor():
-		velocity.y = jump_velocity
-
-	move_and_slide()
-
 	# Animation swap logic for running
-	if not _force_anim_override and is_on_floor():
+	if not _force_anim_override and not _is_knockback and is_on_floor():
+		var is_moving = abs(velocity.x) > 0.1
 		if is_moving and run_texture and idle_texture:
 			_run_anim_time += delta
 			if _run_anim_time >= 0.2:
@@ -82,6 +75,23 @@ func handle_movement(delta: float) -> void:
 			_run_anim_time = 0.0
 			_run_anim_state = false
 			$Sprite2D.texture = idle_texture
+	
+	move_and_slide()
+
+func handle_movement(delta: float) -> void:
+	var input_vector = Vector2.ZERO
+
+	if Input.is_action_pressed("move_left_p%d" % player_id):
+		input_vector.x -= 1
+	elif Input.is_action_pressed("move_right_p%d" % player_id):
+		input_vector.x += 1
+
+	# Horizontal movement
+	velocity.x = input_vector.x * speed
+
+	# Jumping
+	if Input.is_action_just_pressed("jump_p%d" % player_id) and is_on_floor():
+		velocity.y = jump_velocity
 
 func _unhandled_input(event: InputEvent) -> void:
 	var now := Time.get_ticks_msec()
@@ -134,19 +144,28 @@ func perform_action(action: String) -> void:
 		_force_anim_override = false
 		return
 
-	if is_inside_tree() and is_instance_valid($Sprite2D) and idle_texture:
+	if is_instance_valid($Sprite2D) and idle_texture:
 		$Sprite2D.texture = idle_texture
 	_force_anim_override = false
 
 func check_hit(range: float, damage: int) -> void:
 	if opponent and abs(position.x - opponent.position.x) < range:
-		opponent.take_damage(damage)
+		var dir = sign(opponent.position.x - position.x)
+		opponent.take_damage(damage, dir)
 
-func take_damage(amount: int) -> void:
+# Now knockback is handled in take_damage
+func take_damage(amount: int, knockback_dir := 0) -> void:
 	health -= amount
 	print("Player %d got hit! HP: %d" % [player_id, health])
 	if health_ui:
 		health_ui.set_health(health)
+
+	# Apply knockback if direction is provided
+	if knockback_dir != 0:
+		velocity.x = knockback_dir * knockback_force
+		velocity.y = knockback_upward_force
+		_is_knockback = true
+		_knockback_timer = 0.18 # seconds of knockback, tweak for feel
 
 	if health <= 0:
 		if player_id == 1 and p2_win_scene:
