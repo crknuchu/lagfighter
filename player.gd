@@ -8,6 +8,8 @@ const PUNCH_DAMAGE = 1
 const KICK_DAMAGE = 2
 
 @export var speed: float = 200.0
+@export var jump_velocity: float = -350.0 # Negative because y+ is down in Godot
+@export var gravity: float = 900.0
 @export var attack_delay: float = 1.0
 @export var player_id: int = 1  # 1 or 2
 @export var max_health: int = 3
@@ -28,26 +30,37 @@ var health_ui: Node = null
 
 var opponent: Fighter
 
+#var velocity: Vector2 = Vector2.ZERO
+
 func _ready() -> void:
 	health = max_health
-	#if idle_texture == null:
-		#idle_texture = $Sprite2D.texture
-	
 	$Sprite2D.texture = idle_texture
-	
 
 func _physics_process(delta: float) -> void:
-	handle_movement()
+	handle_movement(delta)
 	handle_delayed_actions()
 
-func handle_movement() -> void:
+func handle_movement(delta: float) -> void:
 	var input_vector = Vector2.ZERO
 	if Input.is_action_pressed("move_left_p%d" % player_id):
 		input_vector.x -= 1
 	elif Input.is_action_pressed("move_right_p%d" % player_id):
 		input_vector.x += 1
 
-	velocity = input_vector * speed
+	# Horizontal movement
+	velocity.x = input_vector.x * speed
+
+	# Gravity
+	if not is_on_floor():
+		velocity.y += gravity * delta
+	else:
+		velocity.y = 0
+
+	# Jumping
+	if Input.is_action_just_pressed("jump_p%d" % player_id) and is_on_floor():
+		velocity.y = jump_velocity
+
+	#velocity = move_and_slide(velocity, Vector2.UP)
 	move_and_slide()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -90,12 +103,11 @@ func perform_action(action: String) -> void:
 	if !is_inside_tree():
 		return
 
-
 	var delay = 0.2
 	var timer := get_tree().create_timer(delay)
 	if timer:
 		await timer.timeout
-	
+
 	if !is_inside_tree():
 		return
 
