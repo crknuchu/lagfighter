@@ -10,11 +10,11 @@ position = Vector2(130, 95)
 texture = ExtResource("1_joerk")
 
 [node name="Button" type="Button" parent="."]
-offset_left = 88.0
-offset_top = 150.0
-offset_right = 163.0
-offset_bottom = 181.0
-text = "RESTART"
+offset_left = 42.0
+offset_top = 148.0
+offset_right = 223.0
+offset_bottom = 179.0
+text = "RESTART (or press \"R\")"
 script = ExtResource("2_lvhqq")
 
 [connection signal="pressed" from="Button" to="Button" method="_on_pressed"]
