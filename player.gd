@@ -48,21 +48,42 @@ func _ready() -> void:
 	$Sprite2D.texture = idle_texture
 
 func _physics_process(delta: float) -> void:
+	handle_knockback(delta)
+	handle_input()
+	apply_gravity(delta)
+	handle_animations(delta)
+	move_and_slide()
+	handle_attack_input()
+	handle_delayed_actions()
+
+func handle_knockback(delta: float) -> void:
 	if _is_knockback:
 		_knockback_timer -= delta
 		if _knockback_timer <= 0:
 			_is_knockback = false
-	else:
-		handle_movement(delta)
-	handle_delayed_actions()
 
-	# Apply gravity always, even during knockback
+func handle_input() -> void:
+	if _is_knockback:
+		return
+
+	var input_vector = Vector2.ZERO
+	if Input.is_action_pressed("move_left_p%d" % player_id):
+		input_vector.x -= 1
+	if Input.is_action_pressed("move_right_p%d" % player_id):
+		input_vector.x += 1
+	velocity.x = input_vector.x * speed
+
+	if Input.is_action_just_pressed("jump_p%d" % player_id) and is_on_floor():
+		velocity.y = jump_velocity
+
+func apply_gravity(delta: float) -> void:
+	# Only apply gravity if not on floor or if moving up (for jump/knockback)
 	if not is_on_floor():
 		velocity.y += gravity * delta
-	else:
+	elif velocity.y > 0:
 		velocity.y = 0
 
-	# Animation swap logic for running
+func handle_animations(delta: float) -> void:
 	if not _force_anim_override and not _is_knockback and is_on_floor():
 		var is_moving = abs(velocity.x) > 0.1
 		if is_moving and run_texture and idle_texture:
@@ -75,32 +96,14 @@ func _physics_process(delta: float) -> void:
 			_run_anim_time = 0.0
 			_run_anim_state = false
 			$Sprite2D.texture = idle_texture
-	
-	move_and_slide()
 
-func handle_movement(delta: float) -> void:
-	var input_vector = Vector2.ZERO
-
-	if Input.is_action_pressed("move_left_p%d" % player_id):
-		input_vector.x -= 1
-	elif Input.is_action_pressed("move_right_p%d" % player_id):
-		input_vector.x += 1
-
-	# Horizontal movement
-	velocity.x = input_vector.x * speed
-
-	# Jumping
-	if Input.is_action_just_pressed("jump_p%d" % player_id) and is_on_floor():
-		velocity.y = jump_velocity
-
-func _unhandled_input(event: InputEvent) -> void:
+func handle_attack_input() -> void:
 	var now := Time.get_ticks_msec()
-
-	if Input.is_action_pressed("punch_p%d" % player_id):
+	if Input.is_action_just_pressed("punch_p%d" % player_id):
 		if now - last_punch_time >= PUNCH_COOLDOWN_MS:
 			input_queue.append({ "action": "punch", "time": now })
 			last_punch_time = now
-	elif Input.is_action_pressed("kick_p%d" % player_id):
+	elif Input.is_action_just_pressed("kick_p%d" % player_id):
 		if now - last_kick_time >= KICK_COOLDOWN_MS:
 			input_queue.append({ "action": "kick", "time": now })
 			last_kick_time = now
@@ -153,7 +156,6 @@ func check_hit(range: float, damage: int) -> void:
 		var dir = sign(opponent.position.x - position.x)
 		opponent.take_damage(damage, dir)
 
-# Now knockback is handled in take_damage
 func take_damage(amount: int, knockback_dir := 0) -> void:
 	health -= amount
 	print("Player %d got hit! HP: %d" % [player_id, health])
@@ -169,10 +171,10 @@ func take_damage(amount: int, knockback_dir := 0) -> void:
 
 	if health <= 0:
 		if player_id == 1 and p2_win_scene:
-			print("💥 Player 2 wins!")
+			await get_tree().create_timer(0.7).timeout
 			get_tree().change_scene_to_file(p2_win_scene)
 		elif player_id == 2 and p1_win_scene:
-			print("💥 Player 1 wins!")
+			await get_tree().create_timer(0.7).timeout
 			get_tree().change_scene_to_file(p1_win_scene)
 
 func set_health_ui(ui: Node) -> void:
